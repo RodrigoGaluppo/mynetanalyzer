@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chart</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include the date adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <!-- Include Socket.IO client library -->
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <div style="display: flex; flex-wrap:wrap;">
+
+        <div style="width: 50% ; margin: auto; height:400px;">
+            <canvas id="realTimeChart_30"></canvas>
+        </div>
+    
+        <div style="width: 50%; margin: auto; height:400px;">
+            <canvas id="realTimeChart_60"></canvas>
+        </div>
+
+      
+        <div style="width: 50%; margin: auto; height:400px;">
+            <canvas id="realTimeChart_12h"></canvas>
+        </div>
+    
+        <div style="width: 50%; margin: auto; height:400px;">
+            <canvas id="realTimeChart_24h"></canvas>
+        </div>
+
+        <div style="width: 33%; margin: auto; height:500px;">
+            <canvas id="realTimeChart_protocols"></canvas>
+        </div>
+
+
+        <div style="width: 33%; margin: auto; height:500px;">
+            <canvas id="realTimeChart_sourceports"></canvas>
+        </div>
+
+        <div style="width: 33%; margin: auto; height:500px;">
+            <canvas id="realTimeChart_destports"></canvas>
+        </div>
+
+
+        <div style="width: 33%; margin: auto; height:500px;">
+            <canvas id="realTimeChart_host_by_number_packets"></canvas>
+        </div>
+
+        <div style="width: 33%; margin: auto; height:500px;">
+            <canvas id="realTimeChart_host_by_size_packets"></canvas>
+        </div>
+
+
+    </div>
+
+    <script>
+        var socket = io.connect('http://localhost:5000/main');
+
+        // Function to fetch data
+        function fetchData() {
+            socket.emit('request_data_30')
+            socket.emit('request_data_60')
+            socket.emit('request_data_12h')
+            socket.emit('request_data_24h')
+            socket.emit('request_data_protocols')
+
+            socket.emit('request_data_sourceports')
+            socket.emit('request_data_destports')
+
+            socket.emit('request_host_by_number_packets')
+            socket.emit('request_host_by_size_packets')
+        }
+
+        socket.on('data_update_30', function(data) {
+            
+
+            data = JSON.parse(data)
+
+            // Extract timestamp and quantity
+            var timestamps = data.map(d=> (d.timestamp))
+            var quantities = data.map(d=> (d.quantity))
+
+            chart_30.data.datasets[0].data = quantities
+            chart_30.data.labels = timestamps
+
+            if(data.length == 0){
+                chart_30.data.datasets[0].data = [0]
+                chart_30.data.labels = [new Date()]
+            }
+
+            chart_30.update();
+        });
+
+        socket.on('data_update_60', function(data) {
+            
+
+            data = JSON.parse(data)
+
+            // Extract timestamp and quantity
+            var timestamps = data.map(d=> (d.timestamp))
+            var quantities = data.map(d=> (d.quantity))
+           
+
+            chart_60.data.datasets[0].data = quantities
+            chart_60.data.labels = timestamps
+
+            if(data.length == 0){
+                chart_60.data.datasets[0].data = [0]
+                chart_60.data.labels = [new Date()]
+            }
+
+            chart_60.update();
+        });
+
+         
+        socket.on('data_update_12h', function(data) {
+            
+
+            data = JSON.parse(data)
+
+            // Extract timestamp and quantity
+            var timestamps = data.map(d=> (d.timestamp))
+            var quantities = data.map(d=> (d.quantity))
+           
+
+            chart_12h.data.datasets[0].data = quantities
+            chart_12h.data.labels = timestamps
+
+            if(data.length == 0){
+                chart_12h.data.datasets[0].data = [0]
+                chart_12h.data.labels = [new Date()]
+            }
+
+            chart_12h.update();
+        });
+
+        socket.on('data_update_24h', function(data) {
+            
+
+            data = JSON.parse(data)
+
+            // Extract timestamp and quantity
+            var timestamps = data.map(d=> (d.timestamp))
+            var quantities = data.map(d=> (d.quantity))
+           
+
+            chart_24h.data.datasets[0].data = quantities
+            chart_24h.data.labels = timestamps
+
+            if(data.length == 0){
+                chart_24h.data.datasets[0].data = [0]
+                chart_24h.data.labels = [new Date()]
+            }
+
+            chart_24h.update();
+        });
+
+        
+      
+        socket.on('data_update_protocols', function(data) {
+            
+
+            data = JSON.parse(data)
+
+            var protocols = data.map(d=> (d.protocol))
+            var quantities = data.map(d=> (d.count))
+
+            chart_protocols.data.datasets[0].data = quantities
+            chart_protocols.data.labels = protocols
+
+            chart_protocols.update();
+        });
+
+        
+        socket.on('data_update_sourceports', function(data) {
+            
+
+            data = JSON.parse(data)
+
+            var ports = data.map(d=> (d.port))
+            var quantities = data.map(d=> (d.count))
+
+            
+            chart_sourceports.data.datasets[0].data = quantities
+            chart_sourceports.data.labels = ports
+
+            chart_sourceports.update();
+        });
+
+        
+        socket.on('data_update_destports', function(data) {
+            
+
+            data = JSON.parse(data)
+
+            var ports = data.map(d=> (d.port))
+            var quantities = data.map(d=> (d.count))
+
+            chart_destports.data.datasets[0].data = quantities
+            chart_destports.data.labels = ports
+
+            chart_destports.update();
+        });
+
+        socket.on('host_by_number_packets', function(data) {
+            
+            data = JSON.parse(data)
+
+            var ips = data.map(d=> (d.ip_address))
+            var quantities = data.map(d=> (d.count))
+
+            chart_host_by_number_packets.data.datasets[0].data = quantities
+            chart_host_by_number_packets.data.labels = ips
+
+            chart_host_by_number_packets.update();
+        });
+
+        socket.on('host_by_size_packets', function(data) {
+            
+            data = JSON.parse(data)
+
+            var ips = data.map(d=> (d.ip_address))
+            var quantities = data.map(d=> (d.count))
+
+            chart_host_by_size_packets.data.datasets[0].data = quantities
+            chart_host_by_size_packets.data.labels = ips
+
+            chart_host_by_size_packets.update();
+        });
+
+
+        // Set interval to fetch data every 5 seconds
+        setInterval(fetchData, 5000);
+
+        // Chart.js setup
+        var ctx = document.getElementById('realTimeChart_30').getContext('2d');
+        var ctx_60 = document.getElementById('realTimeChart_60').getContext('2d');
+        var ctx_protocols = document.getElementById('realTimeChart_protocols').getContext('2d');
+
+
+        var ctx_12h = document.getElementById('realTimeChart_12h').getContext('2d');
+        var ctx_24h = document.getElementById('realTimeChart_24h').getContext('2d');
+
+        var ctx_sourceports = document.getElementById('realTimeChart_sourceports').getContext('2d');
+        var ctx_destports = document.getElementById('realTimeChart_destports').getContext('2d');
+
+        var ctx_host_by_number_packets = document.getElementById('realTimeChart_host_by_number_packets').getContext('2d');
+        var ctx_host_by_size_packets = document.getElementById('realTimeChart_host_by_size_packets').getContext('2d');
+
+
+        var chart_30 = new Chart(ctx, {
+            title:"30 minutes packet",
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '30 minutes packet size in MB',
+                    backgroundColor: 'rgba(0, 119, 204, 0.3)',
+                    borderColor: 'rgba(0, 119, 204, 1)',
+                    data: []
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        }
+                    },
+                   
+                },
+                plugins:{
+                    title: {
+                        display: true,
+                        text: '30 minutes packet size in MB',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+    
+        var chart_60 = new Chart(ctx_60, {
+            title:"60 minutes packet",
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '60 minutes packet size in MB',
+                    backgroundColor: 'rgba(0, 119, 204, 0.3)',
+                    borderColor: 'rgba(0, 119, 204, 1)',
+                    data: []
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        }
+                    },
+                    
+                },
+                plugins:{
+                    title: {
+                        display: true,
+                        text: '60 minutes packet size in MB',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+
+        var chart_12h = new Chart(ctx_12h, {
+           
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '12 hours packet size in MB',
+                    backgroundColor: 'rgba(0, 119, 204, 0.3)',
+                    borderColor: 'rgba(0, 119, 204, 1)',
+                    data: []
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        }
+                    },
+                   
+                },
+                plugins:{
+                    title: {
+                        display: true,
+                        text: '12 hours packet size in MB',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+
+        var chart_24h = new Chart(ctx_24h, {
+           
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '24 hours packet size in MB',
+                    backgroundColor: 'rgba(0, 119, 204, 0.3)',
+                    borderColor: 'rgba(0, 119, 204, 1)',
+                    data: []
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        }
+                    },
+                   
+                },
+                plugins:{
+                    title: {
+                        display: true,
+                        text: '24 hours packet size in MB',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+
+        var chart_protocols = new Chart(ctx_protocols, {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Protocol Packet Count',
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    data: []
+                }]
+            },
+            options: {
+                
+                plugins:{
+                    title: {
+                        display: true,
+                        text: 'protocols',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+
+        var chart_sourceports = new Chart(ctx_sourceports, {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Top 10 Source Port Packet Count',
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    data: []
+                }]
+            },
+            options: {
+                
+                plugins:{
+                    title: {
+                        display: true,
+                        text: 'top 10 source ports',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+
+        var chart_destports = new Chart(ctx_destports, {
+            type: 'doughnut',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Top 10 Destination Port Packet Count',
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    data: []
+                }]
+            },
+            options: {
+                plugins:{
+                    title: {
+                        display: true,
+                        text: 'top 10 destination ports',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+        
+        var chart_host_by_number_packets = new Chart(ctx_host_by_number_packets, {
+            type: 'polarArea',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Top hosts by number of packets',
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    data: []
+                }]
+            },
+            options: {
+                plugins:{
+                    title: {
+                        display: true,
+                        text: 'Top hosts by number of packets',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+
+        var chart_host_by_size_packets = new Chart(ctx_host_by_size_packets, {
+            type: 'polarArea',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Top hosts by size of packets in MB',
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    data: []
+                }]
+            },
+            options: {
+                plugins:{
+                    title: {
+                        display: true,
+                        text: 'Top hosts by size of packets',
+                        fontsize:"26px"
+                    }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

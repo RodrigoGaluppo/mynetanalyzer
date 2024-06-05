@@ -1,0 +1,34 @@
+must be split in layers:
+  
+    host
+    deployed on docker swarm:
+        db
+        business 
+            producer
+            consumer
+    frontend
+
+host
+    sniffing of all traffic going through the interface
+    contain server public key on a file 
+    signs its own authenticity with its own private key 
+    sends it to server through websocket but encrypted
+
+business layer
+    producer
+        server with logics of the app
+        receives the traffic and stores it on timeseriesDB
+
+    consumer
+        streams data form timeseries db
+        provides web api to access content 
+        provides machine learning to cassify traffic
+
+db 
+    divided into 
+        nosql db for login credentials and list of machines and their ips
+        some db taht provides real time data storage and stream for the server on the business layer
+
+frontend
+    react js app that will access the content of business, on a chart showing the endpoints
+    display everythnhg

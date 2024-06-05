@@ -23,8 +23,8 @@ public_key_pem = private_key.public_key().public_bytes(
 )
 
 # Save keys to files or store them securely
-with open('server_private_key.pem', 'wb') as f:
+with open('./producer/server_private_key.pem', 'wb') as f:
     f.write(private_key_pem)
 
-with open('server_public_key.pem', 'wb') as f:
+with open('../host/server_public_key.pem', 'wb') as f:
     f.write(public_key_pem)
