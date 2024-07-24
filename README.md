@@ -16,16 +16,21 @@ Having it in mind, A graphical tool was used to draw the solution logically. Div
 
 •	Host Layer: Distributed programs in python that would run on the hosts across the network and extract information about the traffic going through the host with Scapy python library and stream it in real time with WebSockets.
 
+
 •	DB Layer: Database system PostgreSQL with TimeScaleDB extension, for both fast and read capabilities, keeping structured data.
 
 
 •	Client Layer: Web application with a responsive layout, using ChartJS and ReactJS to show the data in an insightful way. Also using typescript to ensure strong typed data on the frontend, making the program more resilient.
 
+
 •	Business Logic Layer: Services deployed on docker containers, controlling the logics of the application and communicating with each other via Rest API or WebSockets for the continuous data stream.
 	Split into 3 services:
-		
+
+  
 o	Producer: Service responsible for receiving the data stream with the information about the traffic of hosts and saving it to the database.
+
 o	Consumer: Service responsible for reading the data from the database and streaming it to the frontend application in real time with WebSockets, working on the data to deliver it processed and ready to be used on the charts.
+
 o	Manager: Service responsible for managing the access control of the user of the frontend application with Flask and JWT token, and responsible for CRUD of entities of the database.
 
 
