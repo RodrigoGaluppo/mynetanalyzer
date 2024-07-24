@@ -92,5 +92,5 @@ login on the portal with default credentials unless if you changed on default.co
 admin
 password123
 
-chnage password t a chosen one
+chnage password to a more secure one
 	
