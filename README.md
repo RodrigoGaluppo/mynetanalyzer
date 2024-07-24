@@ -29,7 +29,7 @@ The diagram looked like this:
 
 ![image](https://github.com/user-attachments/assets/bb518fe5-0f89-4d51-85f1-647417cb499d)
 
-since a normal database would not be fast enough to have it saved, then read on time by the consumer service, so it was decided to use the TimeScaleDB extension on PostgreSQL 
+since a normal database would not be able to handle the high volume of data stream on real timee, it was decided to use the TimeScaleDB extension on PostgreSQL 
 
 # Testing and Validation
 During the testing phase an infrastructure was setup on a Proxmox hypervisor environment, to simulate a real scenario, similarity to the diagram 4 virtual machines (VMs) were deployed on the host layer and were used to navigate on the internet, while a server with the services running was processing the requests. Then to find bugs, I went through the pattern-action rules listed on the requirements, to trigger them, and validate if the result was the expected or not.
