@@ -10,16 +10,24 @@ When designing the solution, the goal was to make it at the same time scalable, 
 
 With the base concept of microservices in mind, I decided to build a distributed system, where a program would be running on chosen hosts and then they would be broadcasting information in a stream to the server, that would store this information in a database made to work with data streams and provide useful real-time insights on a back-office application.
 
+
+
 Having it in mind, A graphical tool was used to draw the solution logically. Dividing it into main 4 layers:
+
 •	Host Layer: Distributed programs in python that would run on the hosts across the network and extract information about the traffic going through the host with Scapy python library and stream it in real time with WebSockets.
+
 •	Business Logic Layer: Services deployed on docker containers, controlling the logics of the application and communicating with each other via Rest API or WebSockets for the continuous data stream.
 	Split into 3 services:
+		
 		o	Producer: Service responsible for receiving the data stream with the information about the traffic of hosts and saving it to the database.
 		o	Consumer: Service responsible for reading the data from the database and streaming it to the frontend application in real time with WebSockets, working on the data to deliver it processed and ready to be used on the charts.
 		o	Manager: Service responsible for managing the access control of the user of the frontend application with Flask and JWT token, and responsible for CRUD of entities of the database.
 
 •	DB Layer: Database system PostgreSQL with TimeScaleDB extension, for both fast and read capabilities, keeping structured data.
+
 •	Client Layer: Web application with a responsive layout, using ChartJS and ReactJS to show the data in an insightful way. Also using typescript to ensure strong typed data on the frontend, making the program more resilient.
+
+
 
 At the end, the whole structure was planned to be delivered on a Proxmox server with 4 host VMs for simulating a network infrastructure, that would interact with the server with their microservices running on docker containers orchestrated by Docker-Compose, for high scalability. The DB was also deployed on a container. While the client react application would be installed on a device using the PWA (Progressive Web App) technology or could be loaded from the browser.
 
